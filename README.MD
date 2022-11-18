@@ -17,7 +17,7 @@ Jupyter notebook
 DB Browser for SQLite
 ```
 
-### Dataset used:
+### Database used:
 ```
 chinook.db
 ```
@@ -36,4 +36,4 @@ https://discuss.codecademy.com/t/data-science-independent-project-2-explore-a-sa
 ## How to use ##
 1. Import Libraries
 2. Follow the instructions in .ipynb file
-3. Answer thequstions
+3. Answer the questions

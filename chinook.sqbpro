@@ -15,7 +15,7 @@ LEFT JOIN tracks
 	ON second_query.TrackId = tracks.TrackId
 )
 SELECT &quot;Total Number&quot;, &quot;TrackId&quot;, &quot;Name&quot;, &quot;Composer&quot;
-FROM third_query; 	</sql><sql name="Asignment_2">WITH first_query AS (
+FROM third_query; 	</sql><sql name="Asignment_2 (not used)">WITH first_query AS (
 SELECT TrackId, COUNT(*) AS Quantity, PlaylistId
 FROM playlist_track
 GROUP BY 3
@@ -46,7 +46,7 @@ FROM first_query
 LEFT JOIN tracks
 	ON first_query.TrackId = tracks.TrackId
 )
-SELECT &quot;Revenue by Track&quot;, &quot;TrackId&quot;, &quot;Name&quot;
+SELECT &quot;TrackId&quot;, &quot;Name&quot;, &quot;Revenue by Track&quot;
 FROM second_query;
 </sql><sql name="Asignment_4">WITH first_query AS (
 SELECT *
@@ -84,7 +84,7 @@ FROM second_query
 LEFT JOIN genres
 	ON second_query.GenreId = genres.GenreId
 )
-SELECT &quot;Revenue by Genre&quot;, GenreId, Name
+SELECT GenreId, Name, &quot;Revenue by Genre&quot;
 FROM third_query;</sql><sql name="Asignment_6">SELECT ROUND (SUM (Total),0) AS &quot;Sales Revenue by Country&quot;, BillingCountry
 FROM invoices
 GROUP BY 2
@@ -96,7 +96,7 @@ GROUP BY 2
 ORDER BY 1 DESC
 )
 SELECT BillingCountry, &quot;Sales Revenue by Country&quot;, 
-       (ROUND(SUM(&quot;Sales Revenue by Country&quot;) / (SELECT SUM(&quot;Sales Revenue by Country&quot;) FROM first_query),3))*100 AS Percentage
+       (ROUND(SUM(&quot;Sales Revenue by Country&quot;) / (SELECT SUM(&quot;Sales Revenue by Country&quot;) FROM first_query), 3))*100 AS Percentage
 FROM first_query
 GROUP BY BillingCountry
 ORDER BY percentage DESC;</sql><sql name="Asignment_8">WITH first_query AS(SELECT *
@@ -117,11 +117,11 @@ FROM first_query
 LEFT JOIN customers
 	ON first_query.CustomerId = customers.CustomerId
 ), third_query AS (
-SELECT SUM (&quot;Average Sale&quot;) AS &quot;Average Sale by Employee&quot;, SupportRepId
+SELECT ROUND(SUM (&quot;Average Sale&quot;), 2) AS &quot;Average Revenue per Sale&quot;, SupportRepId
 FROM second_query
 GROUP BY SupportRepId
 )
-SELECT *
+SELECT EmployeeId, LastName, FirstName, &quot;Average Revenue per Sale&quot;
 FROM third_query
 LEFT JOIN employees
 	ON third_query.SupportRepId = employees.EmployeeId
@@ -136,11 +136,11 @@ FROM first_query
 LEFT JOIN customers
 	ON first_query.CustomerId = customers.CustomerId
 ), third_query AS (
-SELECT SUM (&quot;Total Revenue&quot;) AS &quot;Total Revenue by Employee&quot;, SupportRepId
+SELECT SUM (&quot;Total Revenue&quot;) AS &quot;Total Revenue per Employee&quot;, SupportRepId
 FROM second_query
 GROUP BY SupportRepId
 )
-SELECT *
+SELECT EmployeeId, LastName, FirstName, &quot;Total Revenue per Employee&quot;
 FROM third_query
 LEFT JOIN employees
 	ON third_query.SupportRepId = employees.EmployeeId
@@ -151,7 +151,7 @@ FROM invoice_items
 LEFT JOIN tracks
 	ON invoice_items.TrackId = tracks.TrackId
 ), second_query AS (
-SELECT SUM (UnitPrice) AS &quot;Revenue by Album&quot;, AlbumId
+SELECT ROUND(SUM (UnitPrice),2) AS &quot;Revenue by Album&quot;, AlbumId
 FROM first_query
 GROUP BY 2
 ORDER BY 1 DESC
@@ -175,9 +175,9 @@ FROM revenue_by_album
 LEFT JOIN number_of_tracks
 	ON revenue_by_album.AlbumId = number_of_tracks.AlbumId
 )
-SELECT AlbumId, Title, &quot;Revenue by Album&quot;, &quot;Number of Tracks&quot;
+SELECT AlbumId, Title, &quot;Number of Tracks&quot;, &quot;Revenue by Album&quot;
 FROM join_table
-ORDER BY 3 DESC;</sql><sql name="Asignment_12">WITH first_query AS (
+ORDER BY 4 DESC;</sql><sql name="Asignment_12">WITH first_query AS (
 SELECT SUM(UnitPrice) AS &quot;Revenue by Track&quot;, TrackId
 FROM invoice_items
 GROUP BY 2
@@ -202,8 +202,17 @@ LEFT JOIN revenue_by_track
 	ON number_of_appearance.TrackId = revenue_by_track.TrackId
 WHERE &quot;Revenue by Track&quot; IS NOT NULL
 ORDER BY &quot;Revenue by Track&quot; DESC;
-</sql><sql name="SQL 21">SELECT SUM (Total) AS Amount, strftime('%Y', InvoiceDate) AS Year
+</sql><sql name="Asignment_13">WITH Revenue AS (
+SELECT ROUND(SUM (Total), 2) AS Revenue, CAST(strftime('%Y', InvoiceDate) AS INTEGER) AS &quot;Current Year&quot;, CAST(strftime('%Y', InvoiceDate)-1 AS INTEGER) AS &quot;Previous Year&quot;
 FROM invoices
 GROUP BY 2
-ORDER BY Year;
-</sql><current_tab id="12"/></tab_sql></sqlb_project>
+ORDER BY 2
+)
+SELECT current.&quot;Previous Year&quot;, current.&quot;Current Year&quot;, current.Revenue, ROUND((current.Revenue - previous.Revenue)/previous.Revenue * 100, 2) AS &quot;% change compared to the last year&quot;
+FROM Revenue current 
+LEFT JOIN Revenue previous
+	ON current.&quot;Previous Year&quot; = previous.&quot;Current Year&quot;;
+</sql><sql name="Draft">SELECT SUM (Total) AS Revenue, CAST(strftime('%Y', InvoiceDate) AS INTEGER) AS &quot;Current Year&quot;, CAST(strftime('%Y', InvoiceDate)-1 AS INTEGER) AS &quot;Previous Year&quot;
+FROM invoices
+GROUP BY 2
+ORDER BY 2</sql><current_tab id="12"/></tab_sql></sqlb_project>
